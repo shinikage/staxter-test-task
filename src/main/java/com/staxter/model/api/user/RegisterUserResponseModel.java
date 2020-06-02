@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public class RegisterUserResponseModel {
 
-    private long id;
-    private String firstName;
-    private String lastName;
-    private String userName;
+    private final long id;
+    private final String firstName;
+    private final String lastName;
+    private final String userName;
 }

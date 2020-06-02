@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 public class CodeDescriptionResponseModel {
 
-    private String code;
-    private String description;
+    private final String code;
+    private final String description;
 }

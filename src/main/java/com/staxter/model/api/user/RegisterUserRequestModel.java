@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public class RegisterUserRequestModel {
 
-    private String firstName;
-    private String lastName;
-    private String userName;
-    private String password;
+    private final String firstName;
+    private final String lastName;
+    private final String userName;
+    private final String password;
 }
