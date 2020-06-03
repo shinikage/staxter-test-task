@@ -21,11 +21,6 @@ public final class MapperUtil {
                 user.getHashedPassword(), null, user.getRoles());
     }
 
-    public static UserDto mapToDto(User user) {
-        return new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getUserName(),
-                user.getHashedPassword(), user.getRoles());
-    }
-
     public static User map(RegisterUserRequestModel user) {
         return new User(
                 -1,

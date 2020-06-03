@@ -1,15 +1,8 @@
 package com.staxter;
 
-
 import com.staxter.entrypoint.JwtAuthenticationEntryPoint;
 import com.staxter.util.security.jwt.JwtRequestFilter;
-import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
-import org.apache.tomcat.util.descriptor.web.SecurityCollection;
-import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,10 +21,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private UserDetailsService userDetailsService;
-    private JwtRequestFilter jwtRequestFilter;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final UserDetailsService userDetailsService;
+    private final JwtRequestFilter jwtRequestFilter;
+
+    private static final String REGISTER = "/userservice/register";
+    private static final String LOGIN = "/userservice/login";
 
     @Autowired
     public SecurityConfiguration(BCryptPasswordEncoder bCryptPasswordEncoder,
@@ -46,9 +42,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // configure AuthenticationManager so that it knows from where to load
-        // user for matching credentials
-        // Use BCryptPasswordEncoder
         auth
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(bCryptPasswordEncoder);
@@ -62,17 +55,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        // We don't need CSRF for this example
         httpSecurity
                 .csrf().disable()
                 .requiresChannel().anyRequest().requiresSecure()
                 .and()
-                // dont authenticate this particular request
                 .authorizeRequests()
-                .antMatchers("/userservice/register").permitAll()
+                .antMatchers(REGISTER).permitAll()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/userservice/login").permitAll()
+                .antMatchers(LOGIN).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
@@ -80,7 +71,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and();
-        // Add a filter to validate the tokens with every request
+
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
